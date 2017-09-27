@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Behind the Fame</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+
+    <script src="assets/js/jquery.min.js"></script>
+	  <script src="assets/js/modernizr.custom.js"></script>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Josefin+Slab');
+      @import url('http://fonts.googleapis.com/earlyaccess/jejumyeongjo.css');
+      @import url('http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css');
+
+      body {
+      background-color:#000000;
+      font-family:  'Josefin Slab', serif;
+      color:#E5DFE5;
+      font-size: 12px;
+      }
+
+      h1 {
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: 100;
+      opacity: 0.8;
+      }
+
+      h2 {
+      font-family: 'Jeju Myeongjo', serif;
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: 100;
+      opacity: 0.8;
+      }
+
+      p{
+        font-family: 'Jeju Myeongjo', serif;
+        margin-left: 30px;
+        margin-right: 30px;
+        font-size: 1.2em;
+        font-weight: 100;
+        opacity: 0.8;
+        line-height: 20px;
+
+      }
+      .finalwords{
+        font-size: .5em;
+        font-family: 'Jeju Myeongjo', serif;
+
+      }
+
+      .idolList{
+        font-size: 0.7em;
+        line-height: 5px;
+      }
+
+    </style>
+
+  </head>
+
+  <body data-spy="scroll" data-offset="0" data-target="#theMenu">
+
+
+	<!-- title page -->
+	<section id="home" name="home"></section>
+	<div id="headerwrap">
+		<div class="container">
+
+			<br>
+			<div class="row">
+				<h1>Behind the Fame</h1>
+        <h1>그래도 여전히</h1>
+			</div>
+		</div><!-- /container -->
+	</div><!-- /headerwrap -->
+
+
+	<!-- star shining page -->
+	<section id="about" name="about"></section>
+	<div id="f">
+		<div class="container">
+			<div class="row">
+
+				<div class="col-lg-6 col-lg-offset-3">
+
+          <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+
+          <canvas></canvas>
+
+          <div id="chart"></div>
+          <script src="https://d3js.org/d3.v3.min.js"></script>
+          <script>
+          (function() {
+
+          var regular_stars = [],
+            falling_star;
+
+          var R = Math.PI / 5;
+          var G = 1.2;
+          var TOTAL = 70;
+          var SIZE = 1.2;
+          var ENERGY = 0.02;
+          var FALLING_CHANCE = 0.1;
+
+          var canvas = document.querySelector('canvas');
+          var cx = canvas.getContext('2d');
+          canvas.style.backgroundColor = '#000000';
+          resizeViewport();
+
+        // 별 생성
+          function Star() {
+            this.r = Math.random() * SIZE * SIZE + SIZE; // 별크기
+            this.rp = Math.PI / Math.random(); // 회전각
+            this.rd = Math.random() * 2 - 1; // 회전속도
+            this.x = Math.random() * canvas.width; // x 위치
+            this.y = Math.random() * canvas.height; // y 위치
+            this.e = 0;
+            this.d = false;
+          }
+
+          function FallingStar() {
+            Star.call(this);
+            this.y = Math.random() * canvas.height / 2;
+            this.falling = false; // 별 선택해서 지금은 안 떨어지는상태
+          }
+
+        // 이러한 별들을 셋
+          function setShape(p) {
+            var o = p.o;
+            cx.save();
+            cx.beginPath();
+            cx.translate(o.x, o.y); // 이쪽으로 옮겨라
+            cx.rotate(o.rp); // 이만큼 계속해서 돌아라
+            o.rp += o.rd * 0.01; // 회전속도
+            cx.moveTo(0, 0 - o.r);
+            for (var i = 0; i < 5; i++) {
+              cx.rotate(R);
+              cx.lineTo(0, 0 - o.r * o.c); // 어디서 어디까지 돈다
+              cx.rotate(R);
+              cx.lineTo(0, 0 - o.r);
+            }
+          }
+
+        // 이러한 별들을 실제로 그린다
+          function drawShape() {
+            cx.stroke(); // 이게 겉에 선이기는 한데 얘 없어지면 속도 개빠른거처럼 느껴짐
+            cx.fill();
+            cx.restore();
+          }
+
+        // 반짝이는 효과
+          Star.prototype.shine = function() {
+            this.d ? this.e -= ENERGY : this.e += ENERGY;
+            if (this.e > 1 - ENERGY && this.d === false) {
+              this.d = true;
+            }
+            setShape({
+              o: this
+            });
+            cx.strokeStyle = "rgba(255,215,0, " + this.e + ")";
+            cx.shadowColor = "rgba(255,215,0, " + this.e + ")";
+            cx.fillStyle = "rgba(255,215,0, " + this.e + ")";
+            cx.lineWidth = this.c * 2;
+            cx.shadowBlur = this.r / SIZE; // 별 블러효과
+            cx.shadowOffsetX = 0;
+            cx.shadowOffsetY = 0;
+            drawShape();
+          };
+
+          function redrawWorld() {
+            resizeViewport();
+            cx.clearRect(0, 0, canvas.width, canvas.height);
+            if (regular_stars.length < TOTAL) regular_stars.push(new Star);
+            for (var i = 0; i < regular_stars.length; i++) {
+              regular_stars[i].shine();
+              if (regular_stars[i].d === true && regular_stars[i].e < ENERGY) {
+                regular_stars.splice(regular_stars[i], 1);
+              }
+            }
+            requestAnimationFrame(redrawWorld, canvas);
+          }
+
+          function resizeViewport() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+          }
+
+          document.addEventListener('resize', resizeViewport, false);
+          redrawWorld();
+
+        })();
+          </script>
+
+    </div>
+  </div>
+</div>
+
+
+
+	<!--  Article Page -->
+	<div id="f">
+		<div class="container">
+			<div class="row">
+
+
+
+				<div class="col-lg-6 col-lg-offset-3">
+          <article>
+
+
+            <p>
+              프로듀스 101 시즌 1, 2가 성공적으로 막을 내렸다. 시즌 1 우승 걸그룹인 I.O.I는
+              약 6개월만에 지상파 1위, 시즌 2 우승 보이그룹인 Wanna One은 데뷔 이후 약 12일만에
+               지상파 1위를 거머쥐며 그들의 우승이 국민의 선택이었음을 다시 한 번 보여주었다.
+               프로듀스 101 방송 이후 시청자는 그간 접하지 못했던 아이돌이 데뷔하기까지 오랜 시간을
+               연습생 신분으로 보낸다는 사실과, 데뷔하기 위해 얼마나 많은 연습생이 경쟁하는지를
+               지켜보았다. 그렇다면 치열한 경쟁을 뚫고 데뷔에 성공한 아이돌 중 이후 소위 “뜬”
+               아이돌이 될 확률은 얼마나 될까? 또한 “뜬” 아이돌은 평균 얼마만큼 기간동안 아이돌
+               활동을 할 수 있을까? 아래 컨텐츠는 데뷔 아이돌 중 지상파 1위를 한 아이돌을 모았으며,
+                1위까지의 기간을 데이터 시각화로 표현했으며, 두번째 페이지는 아이돌의 평균 활동 연수를
+                표현하였다.
+            </p>
+            <p>
+              아이돌로 성공하기 위해 연습생 기간을 거쳐 데뷔를 한다 해도, 평생의 수입을 보장받을 수 있을
+              정도로 수익을 올리는 건 쉽지 않을 수 있다는 사실을 데이터로 확인해보았다.
+
+            </p>
+
+
+          </article>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+  <!--  Impact Page -->
+  <section id="about" name="about"></section>
+  <div id="f">
+    <div class="container">
+      <div class="row">
+
+        <div class="finalwords">
+
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <h1>그러나 소위 “뜨지” 못했다 하여, 원하는 만큼 아이돌로 이름을 얻지 못했다 하여도
+            그대들이 보낸 시간들이 의미 없지 않음을.</h1>
+          <h1>긴 연습 시간과 언젠가 무대에서 빛나게 될 순간을 바랬던 시간들이 의미 없지 않음을.</h1>
+          <h1>오히려 그 시간들은, 그래도 여전히 별처럼 빛남을.</h1>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--  Final Page  -->
+	<div id="f">
+		<div class="container">
+			<div class="row">
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+
+				<div class="idolList">
+          <article>
+
+
+            <p> 2001 <br>
+              제이티엘 영원 비오케이 엑스라지 보이 클럽 오션플래티넘 케이팝 디베이스 쥬얼리 투야 알 밀크</p>
+            <p> 2002 <br>
+              블랙 비트 보이스립 포유 큐오큐 제이워크 악동 클럽 (디 에이디) 파이브 러브 신비 슈가</p>
+            <p> 2003 <br>
+              동방신기 버즈 에스 스맥스 테이크 모닝 </p>
+            <p> 2004 <br>
+              제이엔씨 트랙스 컬러링 베이비 7공주 하트 (제이하트)</p>
+            <p> 2005 <br>
+              슈퍼 주니어 파란 더블에스오공일 천상지희 더 그레이스 키스 파이브 </p>
+            <p> 2006 <br>
+              배틀 빅뱅 브라운아이드걸스</p>
+            <p> 2007 <br>
+              초신성 티맥스 타키온 에프티 아일랜드 카라 베이비 복스 리브 써니힐 원더걸스 소녀시대</p>
+            <p> 2008 <br>
+              유키스 스매쉬 에이스타일 샤이니 푸에이엠 투피엠</p>
+            <p> 2009 <br>
+              엠블랙 비스트 레인보우 시크릿 에프엑스 티아라 포미닛 투애니원 애프터 스쿨</p>
+            <p> 2010 <br>
+              제이와이제이 디엠티엔 (달마시안) 틴탑 인피니트 대국남아 씨엔블루 제국의 아이들 오렌지 캬라멜 나인뮤지스 걸스데이 미쓰에이 씨스타 </p>
+            <p> 2011<br>
+              트러블 메이커 마이네임 방용국, 젤로 보이프렌드 슈퍼 주니어-디앤이 비원에이포 블락비 엔소닉 엠아이비
+                씨리얼 파이브 돌스 씨스타 나인틴스텔라애프터 스쿨 레드애프터 스쿨 블루에이핑크브레이브 걸스 라니아
+                치치 달샤벳 천상지희 (다나 선데이)</p>
+            <p> 2012 <br>
+              비에이피 뉴이스트 비투비 엑소 빅스 에이젝스 빅스 타크로스진 투포케이 백퍼센트 이엑스아이디 스피카 레인보우픽시
+              소녀시대-태티서헬로 비너스 글램 에이오에이 디유닛 이블 투엑스 스카프 타이니지 피에스타 크레용팝 타히티</p>
+            <p> 2013 <br>
+              인피니트 에이치 제아 파이브 히스토리 핫젝갓알지 방탄소년단 스피드 소년공화국 탑독 레이디스코드 베스티
+                AOA 블랙 투윤 틴트 와썹 풍뎅이 엠앤엔 퓨리티 다소니 (솔지하니)</p>
+            <p> 2014 <br>
+              갓세븐 빅플로 헤일로 비아이지 하이포 투하트 위너 유니크 제이제이씨씨 매드타운 핫샷 인피니트F
+                칠학년일반 레드벨벳 스피카.S 레인보우 블랙 베리 굿 마마무 라붐 드림캐쳐 에이코어 러블리즈 워너비 소나무</p>
+            <p> 2015 <br>
+              블락비 바스타즈 로미오 몬스타 엑스 엔플라잉 세븐틴 아이콘 데이식스 업텐션 맵식스 스누퍼 여자친구
+                 러버 소울 씨엘씨 오마이걸 멜로디데이 에이프릴 다이아 트와이스 </p>
+            <p> 2016 <br>
+              아스트로 임팩트 펜타곤 에스에프나인 크나큰 엔시티 더블에스 삼공일 MOBB (맙) 첸백시 소년 이십사 비투비-블루
+                빅톤 우주소녀 에이오에이 크림 마틸다 구구단 블랙핑크 아이오아이 씨아이브이에이 아이비아이 리얼걸프로젝트
+                나인뮤지스 A 모모랜드</p>
+            <p> 2017 <br>
+              하이라이트 허니스트 이엑스피에디션 워너원 뉴이스트 W 마이틴 골든차일드 보너스베이비 빈챈현스 루비 에이치유비 이달의 소녀 1/3
+            립버블 프리스틴 비사이드 힌트 </p>
+
+          </article>
+					<p><button type="button" >홈으로</button></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+	<script src="assets/js/classie.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/smoothscroll.js"></script>
+	<script src="assets/js/main.js"></script>
+</body>
+</html>
