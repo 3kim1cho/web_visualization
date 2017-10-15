@@ -1,0 +1,60 @@
+@import url('http://fonts.googleapis.com/earlyaccess/nanumgothic.css');
+@import url('http://fonts.googleapis.com/earlyaccess/notosanskr.css');
+@charset "utf-8";
+body{
+margin: 0;
+padding: 0;
+font-family:'Noto Sans KR';
+}
+
+#container, h1 {
+width: 100%;
+}
+h1{
+
+  text-align: center;
+  font-size:  5em;
+  color : black;
+  width: 800px;
+  height: 500px;
+
+
+}
+img {
+  width:50px;
+  height:50px;
+  display: block;
+  margin: auto;
+
+}
+#left {
+  width : 40%;
+  float: left;
+  padding-top: 100px;
+}
+#right {
+  width : 60%;
+  float: left;
+padding-top: 100px;
+}
+#graph {
+  width:200px;
+  height:400px;
+
+
+}
+#title1 {
+  font-size: 15pt;
+  color : rgb(91, 18, 18);
+  font-weight: bold;
+  font-style: italic;
+  text-align: center;
+}
+p {
+  font-weight : 300;
+}
+section, h1 {
+padding: 5% 15%;
+margin: 0 auto;
+
+}
