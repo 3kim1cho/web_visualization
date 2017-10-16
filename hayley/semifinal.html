@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Behind the Fame</title>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Josefin+Slab');
+      @import url('http://fonts.googleapis.com/earlyaccess/jejumyeongjo.css');
+      @import url('http://fonts.googleapis.com/earlyaccess/nanummyeongjo.css');
+
+      body {
+      background-color:#000000;
+      font-family:  'Josefin Slab', serif;
+      color:#E5DFE5;
+      font-size: 12px;
+      }
+
+      h1 {
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: 100;
+      opacity: 0.8;
+      }
+
+      h2 {
+      font-family: 'Jeju Myeongjo', serif;
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: 100;
+      opacity: 0.8;
+      }
+
+      p{
+        font-family: 'Jeju Myeongjo', serif;
+        margin-left: 60px;
+        margin-right: 60px;
+        font-size: 1.2em;
+        font-weight: 100;
+        opacity: 0.8;
+        line-height: 20px;
+
+      }
+      .finalwords{
+        font-size: .5em;
+        font-family: 'Jeju Myeongjo', serif;
+
+      }
+
+      .idolList{
+        font-size: 0.7em;
+        line-height: 5px;
+      }
+
+      #neon{
+        text-align: center;
+        text-shadow: 0 0 10px #fff,
+         0 0 20px #ff1493,
+         0 0 30px #ff1493,
+         0 0 40px #ff00de,
+         0 0 70px #ff00de,
+         0 0 80px #ff00de,
+         0 0 100px #ff00de,
+         0 0 150px #ff00de;
+      }
+      #center{
+        text-align: center;
+        text-decoration-color: white;
+      }
+
+      #keypassage{
+        text-align: center;
+      }
+
+      .form {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        left: 10px;
+      }
+
+
+      .chart {
+        width: 45%;
+        height: 500px;
+        margin: 0 auto;
+        transform:scale(0.6);
+        transform-origin: top left;
+
+      }
+
+      rect:hover {
+        fill: maroon;
+      }
+
+
+      .text {
+        position: absolute;
+        width: 450px;
+        left: 40%;
+      }
+
+      .word {
+        position: absolute;
+        width: 320px;
+        opacity: 0;
+      }
+
+      .letter {
+        display: inline-block;
+        position: relative;
+        float: left;
+        transform: translateZ(25px);
+        transform-origin: 50% 50% 25px;
+      }
+
+      .letter.out {
+        transform: rotateX(90deg);
+        transition: transform 0.32s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+      }
+
+      .letter.behind {
+        transform: rotateX(-90deg);
+      }
+
+      .letter.in {
+        transform: rotateX(0deg);
+        transition: transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .first {
+        color: #ffe6ec;
+      }
+
+      .second {
+        color: #ff809f;
+      }
+
+      .third {
+        color: #ff0040;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+
+	<!-- title page -->
+	<section id="home" name="home"></section>
+	<div id="headerwrap">
+		<div class="container">
+
+			<br>
+			<div class="row">
+				<h1>Behind the Fame</h1>
+        <h1>그래도 여전히</h1>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- star shining page -->
+	<section id="about" name="about"></section>
+	<div id="f">
+		<div class="container">
+			<div class="row">
+
+				<div class="col-lg-6 col-lg-offset-3">
+
+          <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+
+          <canvas></canvas>
+
+          <div id="chart"></div>
+          <script src="https://d3js.org/d3.v3.min.js"></script>
+          <script>
+          (function() {
+
+          var regular_stars = [],
+            falling_star;
+
+          var R = Math.PI / 5;
+          var G = 1.2;
+          var TOTAL = 70;
+          var SIZE = 1.2;
+          var ENERGY = 0.02;
+          var FALLING_CHANCE = 0.1;
+
+          var canvas = document.querySelector('canvas');
+          var cx = canvas.getContext('2d');
+          canvas.style.backgroundColor = '#000000';
+          resizeViewport();
+
+        // 별 생성
+          function Star() {
+            this.r = Math.random() * SIZE * SIZE + SIZE; // 별크기
+            this.rp = Math.PI / Math.random(); // 회전각
+            this.rd = Math.random() * 2 - 1; // 회전속도
+            this.x = Math.random() * canvas.width; // x 위치
+            this.y = Math.random() * canvas.height; // y 위치
+            this.e = 0;
+            this.d = false;
+          }
+
+          function FallingStar() {
+            Star.call(this);
+            this.y = Math.random() * canvas.height / 2;
+            this.falling = false; // 별 선택해서 지금은 안 떨어지는상태
+          }
+
+        // 이러한 별들을 셋
+          function setShape(p) {
+            var o = p.o;
+            cx.save();
+            cx.beginPath();
+            cx.translate(o.x, o.y); // 이쪽으로 옮겨라
+            cx.rotate(o.rp); // 이만큼 계속해서 돌아라
+            o.rp += o.rd * 0.01; // 회전속도
+            cx.moveTo(0, 0 - o.r);
+            for (var i = 0; i < 5; i++) {
+              cx.rotate(R);
+              cx.lineTo(0, 0 - o.r * o.c); // 어디서 어디까지 돈다
+              cx.rotate(R);
+              cx.lineTo(0, 0 - o.r);
+            }
+          }
+
+        // 이러한 별들을 실제로 그린다
+          function drawShape() {
+            cx.stroke(); // 이게 겉에 선이기는 한데 얘 없어지면 속도 개빠른거처럼 느껴짐
+            cx.fill();
+            cx.restore();
+          }
+
+        // 반짝이는 효과
+          Star.prototype.shine = function() {
+            this.d ? this.e -= ENERGY : this.e += ENERGY;
+            if (this.e > 1 - ENERGY && this.d === false) {
+              this.d = true;
+            }
+            setShape({
+              o: this
+            });
+            cx.strokeStyle = "rgba(255,215,0, " + this.e + ")";
+            cx.shadowColor = "rgba(255,215,0, " + this.e + ")";
+            cx.fillStyle = "rgba(255,215,0, " + this.e + ")";
+            cx.lineWidth = this.c * 2;
+            cx.shadowBlur = this.r / SIZE; // 별 블러효과
+            cx.shadowOffsetX = 0;
+            cx.shadowOffsetY = 0;
+            drawShape();
+          };
+
+          function redrawWorld() {
+            resizeViewport();
+            cx.clearRect(0, 0, canvas.width, canvas.height);
+            if (regular_stars.length < TOTAL) regular_stars.push(new Star);
+            for (var i = 0; i < regular_stars.length; i++) {
+              regular_stars[i].shine();
+              if (regular_stars[i].d === true && regular_stars[i].e < ENERGY) {
+                regular_stars.splice(regular_stars[i], 1);
+              }
+            }
+            requestAnimationFrame(redrawWorld, canvas);
+          }
+
+          function resizeViewport() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+          }
+
+          document.addEventListener('resize', resizeViewport, false);
+          redrawWorld();
+
+        })();
+          </script>
+
+    </div>
+  </div>
+</div>
+
+
+
+	<!--  Article Page 1 -->
+	<div id="f">
+		<div class="container">
+			<div class="row">
+
+
+          <article>
+
+
+            <p>
+              프로듀스 101 시즌 1, 2가 성공적으로 막을 내렸습니다. 시즌 1 우승 걸그룹인 I.O.I는
+              약 6개월만에 지상파 1위, 시즌 2 우승 보이그룹인 Wanna One은 데뷔 이후 약 12일만에
+               지상파 1위를 거머쥐며 그들의 우승이 국민의 선택이었음을 다시 한 번 증명하였습니다.
+               프로듀스 101은 제작 자체만으로 많은 관심과 논란을 불러일으켰는데, 특히 아이돌의 상품화 문제와 데뷔 전 연습생의
+               치열한 경쟁과정이 화자되었습니다. 시청자는 기존에는 아이돌의 화려한 데뷔 및 그들의 엄청난 수업에 관심을 가져왔지만
+               프로듀스 101을 통해 그들의 처절한 경쟁의 밑낯을 볼 수 있게 되었습니다. 프로듀스 101 시즌 2까지 종료 되며
+               또 다른 성공적인 아이돌 그룹을 만들어내었지만 선택받지 못한 연습생들은 다시 기약없는 데뷔를 기다리며 연습을 계속해야 합니다.
+               이 글은 그러한 수많은 아이돌 및 아이돌 지망생의 꿈, 노력을
+               기억해보고자 만든 컨텐츠이며 구성은 다음과 같습니다.
+              <p>1. 치열한 경쟁을 뚫고 데뷔에 성공한 아이돌 중 데뷔 아이돌 중 지상파 1위를 한 아이돌들, 그리고 그들의 1위까지 걸린 시간.</p>
+              <p>2. 각 그룹 별 연습생 기간이 가장 긴, 짧은 멤버</p>
+              <p>3. 아이돌이 상품화 될 수 밖에 없는 아이돌 산업의 구조적 문제.</p>
+              <p>4. 지금까지 데뷔한 아이돌 목록 및 멤버</p>
+
+
+            </p>
+            <p>
+              이 컨텐츠를 통해 화려한 아이돌의 뒷배경에는 엄청난 노동강도와
+              잔인성이 존재한다는 사실을 기억했으면 합니다. 그리고 그러한 노동강도와 잔인성에 대한 보상이 순전히 '운'에 강하게 영향받는다는 점을,
+              아이돌 산업에서 '운'이 유난히 크게 작용할 수 밖에 없는 요인이 철저한 자본주의 논리 하에 세워진 아이돌 수익모델에 있음을 기억했으면 합니다.
+              시각화를 위해 사용한 데이터는 위키피디아 및 인터넷에 존재하는 그래프들을 사용했으며,
+              부족한 데이터는 저자가 직접 모았습니다.
+            </p>
+
+          </article>
+
+
+			</div>
+		</div>
+	</div>
+
+  <!--  Article Page 2, D3 -->
+  <section id="page2" name="page2"></section>
+  <div id="f">
+    <div class="container">
+      <div class="row">
+
+        <div class="article2">
+
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+
+          <script src="https://d3js.org/d3.v3.min.js"></script>
+          <h1 class="page-header">How long does it take to win the first place?</h1>
+
+          <div class="barchart">
+
+            <br><br><br>
+            <p> 아래는 최근 걸그룹들이 지상파 1위를 하기까지 얼마나 시간이 걸리는지 그린 그래프 입니다.
+              제일 짧은 미스에이의 경우 22일, 제일 긴 걸스데이의 경우 1000일을 넘어가는 등 그 특정 그룹이 1위를 하기까지 기간의 보통값이 존재하기 힘들어 보입니다. </p>
+            <br><br><br>
+
+              <div id="myBarChart" class="chart"></div>
+
+            <p> 보이그룹의 상황도 비슷합니다.
+              제일 짧은 위너의 경우 지상파 1위까지 6일밖에 걸리지 않았으나,
+              리더 지코의 활동 등으로 이제는 잘 알려진 블락비는 지상파 1위까지 913일이 걸렸습니다. </p>
+            </br>
+              <div id="myBarChart2" class="chart"></div>
+
+          </div>
+          <script>
+
+
+          (function() {
+            var w, h;
+            w = 800;
+            h = 500;
+
+            var padding = 8;
+            var dataset = [22, 28, 66, 101, 112, 155, 196, 260, 238, 337, 407, 477,549,601,664, 820,1058,1094];
+            var dataName = ["미스에이", "2NE1", "다비치", "포미닛", "소녀시대", "티아라", "씨스타", "원더걸즈", "레드벨벳", "에프터스쿨","크레용팝","시크릿","AOA","에프엑스", "브라운아이드걸즈", "에이핑크", "EXID", "걸스데이"]
+
+            var svg = d3.select("#myBarChart")
+            						.append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+            var x = d3.scale.ordinal()
+                    .domain(dataset.map(function(d){return d}))
+                    .rangeRoundBands([-15, 790]);
+
+            var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .outerTickSize(0)
+                        .orient("bottom");
+
+            var y = d3.scale.linear()
+                    .domain([0,d3.max(dataset)]) //실제값
+                    .range([h,0]);// 변환활 값
+
+            function colorPicker(v) {
+              if (v <= 200) {
+                return "#ffe6ec";
+              } else if (v <= 500) {
+                return "#ff809f";
+              } else {
+                return "#ff0040";
+              }
+            }
+
+            svg.selectAll("rect")
+              .data(dataset)
+              .enter()
+              .append("rect")
+              .attr("x", function(d,i){return x(d)+15})
+              .attr("y", function(d){return y(d)})
+              .attr("width", (w/dataset.length-padding))
+              .attr("height", 0)
+    					.transition().duration(1000).ease("linear")
+              .attr("height", function(d) {return 500-y(d)})
+              .attr("fill", function(d) {return colorPicker(d)})
+
+
+            svg.selectAll("text")
+              .data(dataName)
+              .enter()
+              .append("text")
+              .text(function(d) {return d;})
+              .attr("class", "label")
+             .attr("x", function(d, i) {return i * (w / dataset.length) + (w / dataset.length - padding) / 2;})
+             .attr("y",function(d) { return h + 15;} )
+             .attr("font-family","sans-serif")
+             .attr("fill", "white")
+             .attr("font-size", 11)
+             .attr('text-anchor', 'middle' )
+             //.attr("transform", "rotate(45)")
+
+             svg.append("g")
+             .attr("class", "x axis")
+             .attr("transform", "translate(0,520)")
+             .call(xAxis)
+             .selectAll("text")
+             .attr("dy", ".5em")
+             .attr("fill", "white")
+             .style("text-anchor", "start");
+
+          })();
+
+          (function() {
+
+            var w, h;
+            w = 800;
+            h = 500;
+
+            var padding = 8;
+            var dataset = [6, 11, 15, 55, 74, 123, 232, 255, 385, 433, 488, 562, 549,574,577, 750,757,913];
+            var dataName = ["위너","워너원", "씨엔블루", "FT아일랜드", "동방신기", "샤이니", "슈퍼주니어", "2pm",
+            "빅뱅", "엑소","인피니트","vixx","SS501","틴탑", "2am", "BAP", "B1A4", "블락비"]
+
+            var svg = d3.select("#myBarChart2")
+            						.append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+            var x = d3.scale.ordinal()
+                    .domain(dataset.map(function(d){return d}))
+                    .rangeRoundBands([-15, 790]);
+
+            var xAxis = d3.svg.axis()
+                        .scale(x)
+                        .outerTickSize(0)
+                        .orient("bottom");
+
+            var y = d3.scale.linear()
+                    .domain([0,d3.max(dataset)]) //실제값
+                    .range([h,0]);// 변환활 값
+
+            function colorPicker(v) {
+              if (v <= 200) {
+                return "#ffe6ec";
+              } else if (v <= 500) {
+                return "#ff809f";
+              } else {
+                return "#ff0040";
+              }
+            }
+
+            svg.selectAll("rect")
+              .data(dataset)
+              .enter()
+              .append("rect")
+              .attr("x", function(d,i){return x(d)+15})
+              .attr("y", function(d){return y(d)})
+              .attr("width", (w/dataset.length-padding))
+              //.attr("height", 0)
+    					//.transition().duration(10000).ease("linear")
+              .attr("height", function(d) {return 500-y(d)})
+              .attr("fill", function(d) {return colorPicker(d)})
+
+
+            svg.selectAll("text")
+              .data(dataName)
+              .enter()
+              .append("text")
+              .text(function(d) {return d;})
+              .attr("class", "label")
+             .attr("x", function(d, i) {return i * (w / dataset.length) + (w / dataset.length - padding) / 2;})
+             .attr("y",function(d) { return h + 15;} )
+             .attr("font-family","sans-serif")
+             .attr("fill", "white")
+             .attr("font-size", 11)
+             .attr('text-anchor', 'middle' )
+             //.attr("transform", "rotate(45)")
+
+             svg.append("g")
+             .attr("class", "x axis")
+             .attr("transform", "translate(0,520)")
+             .call(xAxis)
+             .selectAll("text")
+             .attr("fill", "white")
+             .attr("dy", ".5em")
+             .style("text-anchor", "start");
+
+          })();
+          </script>
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  Article Page 3, D3 -->
+  <section id="page3" name="page3"></section>
+  <div id="f">
+    <div class="container">
+      <div class="row">
+
+        <div class="article3">
+          <div class="text">
+            <p>아이돌 연습생 기간은?</p>
+            <p>
+              <span class="word first">원더걸스 선예 6년, 예은 1주일 </span>
+              <span class="word second">빅뱅 GD 11년, 승리 10개월</span>
+              <span class="word third">워너원 황민현 6년3개월 라이관린 6개월</span>
+              <span class="word first">트와이스 지효 10년 미나 1.8년</span>
+              <span class="word second">미쓰에이 민 7년 6개월 수지 10개월</span>
+              <span class="word third">슈퍼주니어 은혁,이특 6년 규현 4개월</span>
+              <span class="word first">2am 조권 8년, 정진운 9개월</span>
+              <span class="word second">엑소 수호 7년 첸 1년</span>
+              <span class="word third">IOI 주결경 5년 6개월 정채연 9개월</span>
+            </p>
+          </div>
+
+          </div>
+
+          <script>
+          var words = document.getElementsByClassName('word');
+          var wordArray = [];
+          var currentWord = 0;
+
+          words[currentWord].style.opacity = 1; // 첫번째 글자부터 시작
+          for (var i = 0; i < words.length; i++) {
+            splitLetters(words[i]);
+          } // current 0인덱스로 시작해서 진행
+
+          // 화면 재배열
+          function changeWord() {
+            var cw = wordArray[currentWord];
+            var nw = currentWord == words.length-1 ? wordArray[0] : wordArray[currentWord+1]; // 제일 마지막이면 첫번째로 다시 돌아가라
+            for (var i = 0; i < cw.length; i++) {
+              animateLetterOut(cw, i); // wordarray 길이를 돌면서 지금 있는애 나가
+            }
+
+            for (var i = 0; i < nw.length; i++) {
+              nw[i].className = 'letter behind';
+              nw[0].parentElement.style.opacity = 1;
+              animateLetterIn(nw, i); // wordarray 길이 돌며 다음애 들어옴
+            }
+
+            currentWord = (currentWord == wordArray.length-1) ? 0 : currentWord+1;
+          }
+
+          function animateLetterOut(cw, i) {
+            setTimeout(function() {
+          		cw[i].className = 'letter out';
+            }, i*80);
+          }
+
+          function animateLetterIn(nw, i) {
+            setTimeout(function() {
+          		nw[i].className = 'letter in';
+            }, 340+(i*80)); // 지금 단어가 끝나는 시간을 결정
+          }
+
+          // 위쪽에 불러와서 해당 선택자에 컨텐츠 바꿈
+          function splitLetters(word) {
+            var content = word.innerHTML; // 어떤 html요소에 접근해 컨텐츠 바꿈
+            word.innerHTML = ''; // 빈칸으로 바꿈
+            var letters = [];
+            for (var i = 0; i < content.length; i++) {
+              var letter = document.createElement('span'); // span 태그를 하나 만듬
+              letter.className = 'letter';
+              letter.innerHTML = content.charAt(i);
+              word.appendChild(letter);
+              letters.push(letter);
+            }
+
+
+            wordArray.push(letters);
+          }
+
+          changeWord();
+          setInterval(changeWord, 4000);
+
+          </script>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <p id="keypassage"> 지드래곤 11년, 승리 8개월. 이 둘은 빅뱅이라는 하나 그룹에 속해있지만 연습생 기간은 무려 약 10배 차이가 납니다.
+            지드래곤과 승리의 사례가 예외적인 경우는 아닙니다. 한 그룹 내 연습생 기간에 큰 차이가 나는 경우는 매우 흔하며, 짧은 연습생 기간을 보낸 멤버를 살펴보면
+            6개월이 안돼는 경우도 꽤 보입니다 비록 이 데이터에서는 볼 수 없지만 긴 연습생을 보낸 이후에도 데뷔를 실패하는 경우도 있을 것입니다. 즉,
+            장기간의 연습생 생활이 데뷔를 보장하는 것이 아님을 의미하는 것입니다. 어느 누군가는 지금 이 순간에도, 오랜 시간 데뷔 기회가
+            무산되어 연습생 신분에 머물러 있을 것입니다. 연습생 시간이 의미 없다는 것은 아니지만, 어떤 데뷔 기회가 생겨 데뷔할 수 있었는지가 데뷔를 결정하는 더 큰
+            요인으로 작용해 보입니다.
+           </p>
+
+          <p id="keypassage">
+          앞선 데이터를 살펴보았을 때 아이돌 데뷔는 상당 부분 '운'에 따르는 경향이 짙어 보입니다. 내가 얼마만큼 연습생 기간을 보내면 데뷔가 가능하다 등의
+          공식이 정해져 있지 않은 만큼 아이돌 연습생의 삶은 매일 데뷔 가능성이 존재하는 긴장되는 나날일 것입니다. 그러나 실력이 좋아도, 똑같은 시간과 노력을
+          투자한다 해도 내가 데뷔하도록 선택되는 과정에 '운'은 깊숙히 개입되어 있습니다. 나보다 늦게 들어왔지만 먼저 데뷔하고, 내 데뷔조에 다른 연습생이 들어가는
+          몇 번의 과정을 지켜보는 아이돌 연습생의 속상한 마음은 누가 책임져줄 수 있을까요.
+          </p>
+
+          <p id="keypassage">그리고 그럼 왜 아이돌 산업은 왜이렇게 '운'에 영향을 받을까요?</p>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  Article Page 4 -->
+  <section id="page4" name="pag4"></section>
+  <div id="f">
+    <div class="container">
+      <div class="page4">
+
+      <br><br><br><br><br><br><br>
+
+      <p id="neon">"그래도 투자한 만큼은"</p>
+
+      <p>'운'이 강하게 작용할 수 밖에 없는 원인은 아이돌 수익모델에 있습니다.
+      아이돌 한 명을 길러내는 데 소속사는 막대한 비용을 투자합니다. 연습생 모두의 식비 등의 생활비는 모조리 기획사의 투자금이며, 적은 확률을 뚫고 이 아이돌이
+      성공했을 경우 기획사는 적어도 투자한 만큼은 회수해야 한다는 생각을 하게됩니다. 아이돌의 특성상 평균 활동 기간이 상대적으로 짧고
+      해당 아이돌이 언제까지 인기를 누릴지 불확실하며, 동시에 자신의
+      회사와 계약되어 있을 때 최대한 많은 수익을 창출해야 투자금을 회수하고, 후배를 양성할 비용을 다시 얻을 수 있게 됩니다. 철저한 투자-수익회수 모델 위에 세워진
+      아이돌 양성 시스템은 잔인할 수 밖에 없습니다. 어린 연습생들은 더 이상 사람이 아닌 빨리 키워 본전을 회수해야 하는 투자모델이기 때문입니다.
+      이 논리 속에서 아이돌은 사람이 아닌 상품입니다. 누가 데뷔를 할지는 누가 그 순간 가장 예쁘고 인기 많은지로 결정됩니다. 회사 입장에서 너가 얼마나 연습을 많이 했던,
+      너가 얼마나 노래를 잘 부르던 사람들의 이목을 집중시키지 못하면 수익을 낼 수 없고, 더 수익을 낼 수 있는 다른 연습생을 선택합니다.
+      </p>
+
+      <p id="neon">"상품"</p>
+
+      <p>아이돌의 탄생은 "사람"인 아이돌을 길러내는 과정이 아닌 사람들에 취향에 맞는 "상품"을 키워내는 과정입니다. 아이돌 개개인의 인격, 성격등은 중요하지 않고,
+      사람들이 원하는 외형적 혹은 내적 모습까지 연기해야만 하는것이죠. 아이돌 "나"의 매력은 사람들이 얼만큼 좋아하는지로 평가받고 그 순위는 광고 섭외 수,
+      드라마 출연 비용 등 "비용"으로 평가받습니다. 나에게 매일 매겨지는 눈에 띄는 가격표는 아이돌 스스로를 무한한 경쟁에 내몰게합니다. 그리고 슬프게도 그
+      가격의 많은 부분은 외모에서 출발합니다. 데뷔 전, 그리고 데뷔 후 매일같이 매겨지는 가격표 속에서 수많은 연습생은 자신의 상품가치를 높이기 위해 외모를 가꾸고,
+      춤을 연습합니다.</p>
+
+      <p id="neon" >"그래서 개인은"</p>
+      <p> 이런 잔인한 시스템의 근본적인 문제는, 어린 연습생들이 아이돌 데뷔를 위한 능력 이외에 다른 능력을 기를 수 없다는 데 있습니다. 데뷔 이후 "뜬" 아이돌이 되기 위해
+      당연히 모든 시간을 연습에 투자하고, 학업 교우관계 등은 후순위로 밀려납니다. 문제는 데뷔가 실패할 경우, 데뷔 후 평생 유지할 수 있는 직업인으로서 연예인이 되지 못한 경우
+      연습생 이외의 삶을 경험해보지 못한 학생들은 다른 직업을 얻기 어렵습니다.</p>
+
+
+      <br><br><br><br><br><br><br>
+
+      </div>
+    </div>
+  </div>
+
+  <!--  Article Page 5 -->
+  <section id="page5" name="page5"></section>
+  <div id="f">
+    <div class="container">
+      <div class="page5">
+
+
+      <br><br><br><br><br><br><br>
+      <br><br><br><br><br><br><br>
+      <br><br><br><br><br><br><br>
+      <br><br><br><br><br><br><br>
+      <p id="neon">"그들의 관계를 규정하는 것은 인기였고, 달리 말하자면 돈이었다." - 이학준 감독</p>
+
+      <p>언론인 출신의 이학준 감독이 걸그룹의 매니저로 1년을 생활하고 느낀점을 촬영한 "대한민국에서 걸그룹으로 산다는 것은"은 2010년 이야기입니다.
+        그는 아이돌 산업의 잔인성을 위와 같은 한 마디로 표현했었습니다.
+      2017년인 지금, 시간이 꽤 흘러 걸그룹 육성 시스템이 그때와 똑같지는 않다 하더라도, 프로듀스 101을 보면 아이돌이 되기 위해 수많은 연습생이
+      치열한 경쟁을 하고 있다는 사실은 알 수 있다 생각합니다. </p>
+
+      <p>성공한 아이돌들이 막대한 재산을 축적하고 선망의 대상이 될 때, 다른 한 편으로 누군가는 이 시스템을 '똑같이' 혹은 더욱 열심히 연습하며 힘들게 견디고도
+      원하는 무대에 올라가지 못합니다. 그리고 그들의 연습이 데뷔로 이어지지 못하게 만든 배경에는, 매일의 일상 속 누군가에게 인기를 주며 특정 아이돌을 선택했던
+      우리도 있을 수 있지 않을까요?</p>
+
+      <p>마지막 장은 지금까지 데뷔했던, 그리고 데뷔를 위해 연습하는 연습생들을 기억하며 끝을 내고 싶습니다.</p>
+      <br><br><br><br><br><br><br>
+
+      </div>
+    </div>
+  </div>
+
+  <!--  Impact Page -->
+  <section id="about" name="about"></section>
+  <div id="f">
+    <div class="container">
+      <div class="row">
+
+        <div class="finalwords">
+
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <h1>그러나 소위 “뜨지” 못했다 하여, 원하는 만큼 아이돌로 이름을 얻지 못했다 하여도
+            그대들이 보낸 시간들이 의미 없지 않음을.</h1>
+          <h1>긴 연습 시간과 언젠가 무대에서 빛나게 될 순간을 바랬던 시간들이 의미 없지 않음을.</h1>
+          <h1>오히려 그 시간들은, 그래도 여전히 별처럼 빛남을.</h1>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--  Final Page  -->
+	<div id="f">
+		<div class="container">
+			<div class="row">
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+
+				<div class="idolList">
+          <article>
+
+
+            <p> 2001 <br>
+              제이티엘[장우혁, 토니안, 이재원] 영원 비오케이 엑스라지 보이 클럽 오션[황성환, 손일권, 오병진, 김민성, 유석호, 김찬민, 우일]
+              플래티넘[김영훈, 김상태, 김섭, 한글, 국철, 아키, 현창] 케이팝[주민, 동화, 영원, 유빈, 우현] 디베이스[제드, 지훈, 환호, 오수안, 남현준]
+              쥬얼리[하주연 김예원 윤진솔 박정아 정유진 이지현 전은미 조민아 서인영 김은정] 투야[김지혜, 류은주, 안진경] 알[혜민, 재영, 혜진, 지현] 밀크[쟁ㅇ, 보미, 현진, 유미]</p>
+            <p> 2002 <br>
+              블랙비트[황상훈 이소민 정지훈 심재원 장진영] 보이스립 포유 큐오큐 제이워크[김재덕, 장수원] 악동클럽(디 에이디) 파이브[서지원 장해영 우정태 김현수]
+              러브[은별, 빈, 햇님] 신비[오상은, 유나, 유수진] 슈가[아유미, 육혜승, 이하린, 황정음, 박수진]</p>
+            <p> 2003 <br>
+              동방신기[정윤호, 김준수, 김재중, 박유천, 최창민] 버즈[김예준, 윤우현, 신준기, 손성희, 민경훈] 에스[강타, 신혜성, 이지훈] 스맥스 테이크 모닝 </p>
+            <p> 2004 <br>
+              제이엔씨[김재덕 장수원 김태형 우연석 오종혁 김상혁] 트랙스[제이 김정모 노민우 강정우] 제이하트[송재윤, 장서린, 이은영]</p>
+            <p> 2005 <br>
+              슈퍼 주니어[이특, 희철, 예성, 강인, 신동, 성민, 은혁, 시원, 동해, 려욱, 규현] 파란[피오 에이스 라이언 에이제이 네오] SS501[김현중 허영생 김규종 박정민 김형준]
+              천상지희더그레이스[린아 다나 선데이 스테파니] 키스파이브 </p>
+            <p> 2006 <br>
+              배틀[류, 리오, 태화, 휘찬, 크리스] 빅뱅[태양, 승리, 대성, 지드래곤, 탑] 브라운아이드걸스[제아, 미료, 나르샤, 가인]</p>
+            <p> 2007 <br>
+              초신성[윤학 성재 광수 성모 지혁 건일] 티맥스[신민철, 김준, 박윤화, 주찬양, 박한비] 타키온 FT아일랜드[최종훈 이홍기 이재진 송승현 최민환] 카라[ 허영지, 박규리, 한승연, 구하라, 김성희, 니콜, 강지영]
+              베이비복스리브[안진경, 양은지, 황연경, 한애리, 명사랑, 오민진, 박소리, 황연경, 오민진, 박소리]
+              써니힐[주비, 미성, 승아, 코타, 장현] 원더걸스[유빈, 예은, 선미, 혜림, 선예, 소희, 현아] 소녀시대[태연 써니 티파니 효연 유리 수영 윤아 서현]</p>
+            <p> 2008 <br>
+              유키스[수현 기섭 일라이 훈 준 알렉산더 기범 동호 AJ 케빈] 스매쉬[세계, 제리, 나루, 한방, 히로, 천우] 에이스타일[박정진 토모 하이밍 변장문 故성인규 임한별]
+              샤이니[종현, 키, 온유, 민호, 태민] 투에이엠[조권, 이창민, 임슬옹, 정진운] 투피엠[Jun.K, 닉쿤, 택연, 우영, 준호, 찬성, 박재범]</p>
+            <p> 2009 <br>
+              엠블랙[승호, 지오, 미르, 이준, 천둥] 비스트[윤두준, 장현승, 용준형, 양요섭, 이기광, 손동운] 레인보우[김재경, 고우리, 오승아, 노을, 정윤혜, 김지숙, 조현영]
+              시크릿[전효성, 정하나, 송지은, 한선화] 에프엑스[빅토리아, 크리스탈, 엠버, 루나, 설리] 티아라[큐리, 은정, 효민, 지연, 지애, 지원, 화영, 아름, 보람, 소연]
+              포미닛[남지현, 허가윤, 전지윤, 김현아, 권소현] 투애니원[CL, 박봄, 박산다라, 공민지] 애프터스쿨[레이나, 나나, 리지, 이영, 가은, 소영, 베카, 가희, 주연, 정아, 유이]</p>
+            <p> 2010 <br>
+              남녀공학[미소수미, 악동광행, 천지유성, 지혜태운, 열혈강호, 별빛찬미, 가온누리, 한빛효영, 한별혜원, 알찬성민] 제이와이제이[박유천, 김재중, 김준수]
+              디엠티엔(달마시안)[이나티, 데이데이, 다리, 사이먼, 동림, 지수, 다니엘] 틴탑[캡, 천지, 니엘, 리키, 창조, 엘조] 인피니트[김성규 장동우 남우현 이성열 엘 이성종] 대국남아[미카, 가람, 현민, 인준 Jay]
+              씨엔블루[정용화, 이종현, 강민혁, 이정신]
+              제국의아이들[문준영, 케빈, 황광희, 임시완, 김태헌, 정희철, 하민우, 박형식, 김동준] 오렌지캬라멜[레이나, 나나, 리지]
+              나인뮤지스[혜미, 성아, 경리, 소진, 금조, 재경, 라나, 비니, 이샘, 은지, 세라, 이유, 애린, 민하, 현아] 걸스데이[소진, 유라, 민아, 혜리, 지선, 지인, 지해]
+              미쓰에이[민, 수지, 페이, 지아] 씨스타[소유, 다솜, 효린, 보라] </p>
+            <p> 2011<br>
+              트러블메이커[현아, 장현승] 마이네임[건우, 인수, 세용, 준Q, 채진] 방용국 보이프렌드[동현, 현성, 정민, 영민, 광민, 민우] 비원에이포[진영, 신우, 산들, 바로, 공찬]
+               블락비[태일, 비범, 재효, 유권, 박경, 지코, 피오]
+              엔소닉[제이하트, 시후, 최별, 민기, 봉준, 은호, 종욱, 연준, 시온] 엠아이비[직 재스퍼, 강남, 영크림, 심스]
+                씨리얼[케미, 에피, 앤제이, 레니, 레디] 파이브돌스[나연, 승희, 효영, 연경, 혜원, 은교, 수미, 찬미, 지현, 샤넌] 나인틴 스텔라[민희, 효은, 소영, 영흔, 가영, 조아, 이슬, 전율] 에이핑크[오하영, 정은지, 윤보미, 손나은, 박초롱, 김남주]
+                브레이브걸스[민영, 유정, 은지, 유나, 하윤, 은영, 서아, 예진, 유진, 혜란] 라니아[지은, 유민, 지유, 따보,
+                혜미, 이조, 조이, 리코, 주이, 샤론, 디티애, 시아, 크리스탈, 지현, 이나, 알렉스]
+                치치[샤인, 세미아지, 수이, 보름, 나라, 피치, 지유] 달샤벳[세리, 아영, 우희, 수빈, 비키, 지율, 가은] </p>
+            <p> 2012 <br>
+              비에이피[방용국 힘찬 대현 영재 종업 젤로] 뉴이스트[JR, 아론, 백호, 민현, 렌] 비투비[서은광, 이민혁, 이창섭, 임현식, 프니엘, 정일훈, 육성재]
+              엑소[시우민, 백현, 첸, 세훈, 디오, 레이, 찬열, 수호, 카이] 빅스[엔, 레오, 켄, 라비, 홍빈, 혁] 에이젝스[도우, 윤영, 승진, 승엽, 중희, 성민, 재형, 지후]
+              빅스타[필독, 바람, 래환, 성학, 주드] 크로스진[신원호, 세영, 타쿠야, 상민, 용석, J.G, 캐스퍼] 투포케이[코리, 기수, 정욱, 휘, 창선, 진홍, 홍섭, 석준, 병호, 성오, 대일]
+              백퍼센트[민우, 록현, 종환, 찬용, 혁진, 상훈, 창범] 이엑스아이디[솔지, LE, 하니, 혜린, 정화, 유지, 다미, 해령] 스피카[김보아, 박시현, 박나래, 양지원, 김보형] 레인보우픽시[오승아, 김지숙, 조현영]
+              헬로비너스[앨리스, 나라, 라임, 유영, 서영, 여름, 유아라, 윤조] 글램[박지연, ZINNI, 다희, 미소, TRINITY] 에이오에이[초아, 찬미, 민아, 지민, 설현, 혜정, 유나] 디유닛[람, 진, 유진, 제이니]
+              이블[세이, 제이다, 쥬시, 하야나, 율] 투엑스[지유, 은, 수린, 은영, 민주] 스카프[주아, 타샤, 하나, 제니, 유키, 솔, 페린] 타이니지[제이민, 민트, 도희, 명지] 피에스타[재이, 차오루, 린지, 혜미, 예지, 체스카]
+              크레용팝[송보람, 엘린, 초아, 웨이, 소율] 타히티[민재, 지수, 미소, 아리, 제리, 예은, E.J, 다솜, 진, 정빈]</p>
+            <p> 2013 <br>
+            히스토리[송경일, 나도균, 김시형, 김재호, 장이정] 핫젝갓알지[은지원] 방탄소년단[랩몬스터, 진, 슈가, 제이홉, 지민, 뷔, 정국] 스피드[광행 인오 김유환 김정우 신종국 박세준 키오 우태운 아이원 최성민]
+            소년공화국[원준 선우 성준 민수 수웅] 탑독[호준 상도 제로 비주 야노 키도 서궁 곤 제니씨 아톰 P군 낙타 한솔] 레이디스코드[애슐리 소정 주니 은비 리세] 베스티[혜연 해령 유지 다혜]
+            틴트[메이 상미 미림 제이미 미니] 와썹[나리 지애수진 우주 진주 다인 나다] 풍뎅이[파랑 노랑 빨강] </p>
+            <p> 2014 <br>
+              갓세븐[JB 마크 잭슨 진영 영재 뱀뱀 유겸] 빅플로[정균 의진 성민 론 유성 렉스 하이탑 기천 지욱] 헤일로[오운 디노 재용 희천 인행 윤동] 비아이지[제이훈 벤지 건민 민표 희도] 하이포[김성구 알렉스 백명한 임영준]
+              위너[강승윤, 김진우, 이승훈, 송민호] 유니크[조이쉔 김성주 이문한 조승연 왕이보] 제이제이씨씨[심바 이코 프린스맥 에디 율 지카산청] 매드타운[무스 대원 이건 조타 허준 버피 호]
+              핫샷[최준혁 김티모테오 노태현 하성운 고호정 윤산]
+                칠학년일반 레드벨벳[아이린, 웬디, 슬기, 조이] 베리굿[태하 조현 서율 다예 세형 고운 수빈 이라 나연 ] 마마무[솔라 문별 휘인 화사] 라붐[유정, 소연, 지엔, 율희, 해인, 솔빈] 드림캐쳐[지유 수아 시연 한동 유현 다미 가현]
+                 에이코어[지영 민주 케미 다야 태희] 러블리즈[JIN, 정예인, Kei, 류수정, 서지수, 유지애, 이미주, 베이비소울] 워너비[세진 로은 린아 아미 은솜 새봄 제이빈 윤슬 서윤 지우 시영] 소나무[수민 민재 디애나 나현 의진 하이디 뉴썬]</p>
+            <p> 2015 <br>
+              블락비[태일, 비범, 재효, 유권, 박경, 지코, 피오] 로미오[윤성 현경 카일 승환 민성 마일로 강민] 엔플라잉[이승협 권광진 차훈 김재현 유회승] 세븐틴[에스쿱스 정한 조슈아 준 호시 원우 우지 도겸 민규 디에잇 승관 버논 디노]
+              아이콘[B.I 김진환 송윤형 BOBBY 김동혁 구준회 정찬우] 데이식스[성진, Jae, Young K, 원필, 도운] 업텐션[진후 쿤 고결 웨이 비토 우신 선율 규진 환희 샤오] 맵식스 스누퍼[태웅 수현 상일 우성 상호 세빈] 여자친구[은하, 신비, 예린, 엄지, 소원, 유주]
+                 러버소울[킴 최초] 씨엘씨[장승연 오승희 최유진 SORN 장예은 엘키 권은빈] 오마이걸[아린, 승희, 유아, 효정, 지호, 비니, 진이, 미미] 멜로디데이[예인, 유민, 차희, 여은] 에이프릴[진솔, 나은, 채원, 레이첼, 채경, 예나] 다이아[기희현 유니스 주은 제니 예빈 은진 정채연 은채 솜이 승희]
+                 트와이스[나연 장연 모모 사나 지효 미나 다현 채영 쯔위] </p>
+            <p> 2016 <br>
+              아스트로[진진 MJ 차은우 문빈 라키 윤산하] 임팩트[지안 제업 태호 이상 웅재] 펜타곤[후이 진호 홍석 이던 신원 여원 옌안 유토 키노 우석] 에스에프나인[영빈 인성 재윤 다원 주호 로운 태양 휘영 찬희] 크나큰[김지훈 김유진 박승준 정인성 오희준]
+              엔시티[마크, 윈윈, 해찬, 태용, 유타, 재현, 태일]
+                빅톤[한승우 강승식 허찬 임세준 도한세 최병찬 정수빈] 우주소녀[엑시 설아 선의 보나 수빈 루다 다원 은서 성소 미기 여름 다영 연정] 마틸다[해나 단아 세미 새별] 구구단[하나 미미 해빈 나영 세정 샐리 소이 미나 혜연] 블랙핑크[지수 제니 로제 리사]
+                 아이비아이[이해인 김소희 윤채경 이수현 한혜리] 모모랜드[혜빈 연우 제인 태하 나윤 데이지 주이 아인 낸시]</p>
+            <p> 2017 <br>
+              허니스트[서동성 오승석 김철민 김환] 이엑스피에디션[프랭키 헌터 시메 코키] 워너원[강다니엘, 박지훈, 이대휘, 김재환, 옹성우, 박우진, 라이관린, 윤지성, 황민현, 배진영, 하성운]
+              마이틴[은수 이태빈 천진 시헌 신준섭 송유빈 한슬] 골든차일드[이대열 Y 박재석 이장준 TAG 배승민 봉재현 김지범 김동현 홍주찬 최보민] 보너스베이비 루비 에이치유비 이달의 소녀 1/3[희진 현진 하슬 여진 비비 김립 진솔 최리]
+            립버블 프리스틴[나영 로아 유하 은우 레나결경 예하나 성연 시연 카일라] 비사이드 힌트 위키미키[지수연 엘리 최유정 김도연 세이 루아 리나루시]</p>
+
+          </article>
+					<p><button type="button" >홈으로</button></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>
