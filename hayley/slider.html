@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Quicksand');
+
+    .buttons{
+    width:435px;
+    margin:0 auto;
+    position:relative;
+    }
+
+    .container{
+    max-width:400px;
+    margin:0 auto;
+    }
+
+    .container div{
+    width:100%;
+    display:inline-block;
+    display:none;
+    }
+
+    .next,
+    .prev{
+    margin-top:100px;
+    position:absolute;
+    border:none;
+    outline:none;
+    color:#000;
+    opacity:0.5;
+    }
+
+    .next:hover,
+    .prev:hover{
+    cursor:pointer; // 해당 위치에 커서 올리면 모양바뀜
+    opacity:0.5;
+    }
+
+    .material-icons.md-48{
+    font-size:48px;
+    }
+
+    .next{
+    right:0;
+    }
+
+    .prev{
+    left:0;
+    }
+
+    p{
+    text-align:center;
+    font-size:15px;
+    font-family: 'Quicksand', sans-serif;
+    }
+    </style>
+  </head>
+
+  <body>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <div class="buttons">
+    <button class="next"><i class="material-icons md-48">&#xE315;</i></button>
+    <button class="prev"><i class="material-icons md-48">&#xE314;</i></button>
+
+    <div class="container">
+      <div style="display:inline-block;">
+        <img src="https://www.muralswallpaper.co.uk/app/uploads/brooklyn-night-city-plain-820x532.jpg" style="width:400px">
+        <p>You can even write informations down here!</p>
+      </div>
+      <div>
+        <img src="https://media.timeout.com/images/103444978/image.jpg" style="width:400px">
+        <p>Depending on what contents you have</p>
+      </div>
+      <div>
+        <img src="https://www.j1.ie/contentfiles/images/J1/bigstock-NEW-YORK-CITY--SEP--Times-S-26078033.jpg" style="width:400px">
+        <p>Think how you can use this format!</p>
+      </div>
+    </div>
+
+    <script>
+        // defensive coding
+    $(document).ready(function() {
+    var currentIndex = 0,
+      // lists the contents you want to change
+      pics = $(".container div"),
+      picLength = pics.length;
+
+    function change() {
+    var item = $(".container div").eq(currentIndex); // eq는 지금 해당하는거 빼내기
+    pics.hide(); // 현재 보여주는거 제외하고 다 숨김
+    item.css("display", "inline-block"); // 지금 해당하는거만 보여주기
+    }
+
+    $(".next").click(function() {
+    currentIndex += 1;
+    if (currentIndex > picLength-1){
+      currentIndex = 0; // 처음으로 돌리기
+    }
+    change();
+    });
+
+    $(".prev").click(function() {
+    currentIndex -= 1;
+    if(currentIndex < 0){
+      currentIndex = picLength-1; // 끝으로 돌아가기
+    }
+    change();
+    });
+    
+    });
+
+    </script>
+
+  </body>
+</html>
